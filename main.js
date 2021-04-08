@@ -13,40 +13,41 @@ const TURN_OFFSET_INCREMENT = 0.002;
 const BOUNCE_LENGTH_MODIFIER = 0.2;
 
 _fileInputElement.addEventListener('change', () => handleAudioFileChange());
+_audioPlayer.addEventListener('play', () => handleAudioFileStart());
+
+let started = false;
 
 let ref;
 
-function handleAudioFileChange() {
-	anime({
-		targets: 'path',
-		translateX: -25,
-		easing: 'linear'
-	});
-	anime({
-		targets: 'line',
-		translateX: -25,
-		easing: 'linear'
-	});
-
-	circles.forEach((circle, index) => {
-		const x = 850 + RADIUS * Math.sin((360 / circles.length) * index);
-		const y = 70 + RADIUS * Math.cos((360 / circles.length) * index);
-
+function handleAudioFileStart() {
+	if (!started) {
 		anime({
-			targets: circle,
-			translateX: 0,
-			trasnlateY: 0,
-			cx: x,
-			cy: y,
+			targets: 'path',
+			translateX: -25,
 			easing: 'linear'
 		});
-	});
+		anime({
+			targets: 'line',
+			translateX: -25,
+			easing: 'linear'
+		});
+
+		circles.forEach((circle, index) => {
+			const x = 850 + RADIUS * Math.sin((360 / circles.length) * index);
+			const y = 70 + RADIUS * Math.cos((360 / circles.length) * index);
+
+			anime({
+				targets: circle,
+				translateX: 0,
+				trasnlateY: 0,
+				cx: x,
+				cy: y,
+				easing: 'linear'
+			});
+		});
+	}
 
 	setTimeout(() => {
-		_audioPlayer.src = URL.createObjectURL(_fileInputElement.files[0]);
-		_audioPlayer.load();
-		_audioPlayer.play();
-
 		const _context = new AudioContext();
 		const _source = _context.createMediaElementSource(_audioPlayer);
 		const _analyser = _context.createAnalyser();
@@ -84,7 +85,13 @@ function handleAudioFileChange() {
 
 		_audioPlayer.play();
 		draw();
-	}, 1500);
+	}, 1000);
+	started = true;
+}
+
+function handleAudioFileChange() {
+	_audioPlayer.src = URL.createObjectURL(_fileInputElement.files[0]);
+	_audioPlayer.load();
 }
 
 function stop() {
