@@ -39,3 +39,7 @@ button {
 #audio-player {
 	width: 100%;
 }
+
+.hidden {
+	display: none !important;
+}
